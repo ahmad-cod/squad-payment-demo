@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
 @app.post("/initiate-payment")
 async def initiate_payment(amount: int, email: str, is_recurring: bool = False):
-    print("Initiating payment...")
+    # print("Initiating payment...")
     url = f"{BASE_URL}/transaction/initiate"
     
     headers = {
@@ -54,14 +54,13 @@ async def initiate_payment(amount: int, email: str, is_recurring: bool = False):
         "initiate_type": "inline",
         "is_recurring": is_recurring,
         "callback_url": "https://linkedin.com/in/ahmadaroyehun"
-        # "callback_url": "http://localhost:3000/callback" 
     }
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url, json=payload, headers=headers)
         
     if response.status_code != 200:
-        print("Failed to initiate transaction:", response.text)
+        # print("Failed to initiate transaction:", response.text)
         raise HTTPException(status_code=400, detail="Failed to initialize transaction")
     return response.json()
 
@@ -71,7 +70,7 @@ async def verify_payment(transaction_ref: str):
     
     headers = {"Authorization": f"Bearer {SQUAD_SECRET_KEY}"}
 
-    print("Verifying transaction: ", transaction_ref)
+    # print("Verifying transaction: ", transaction_ref)
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers)
 
@@ -98,12 +97,12 @@ async def webhook(request: Request):
     ).hexdigest().upper()
 
     if not hmac.compare_digest(computed_signature, x_squad_encrypted_body.upper()):
-        print("Invalid signature. Computed:", computed_signature, "Received:", x_squad_encrypted_body.upper())
+        # print("Invalid signature. Computed:", computed_signature, "Received:", x_squad_encrypted_body.upper())
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid signature")
 
     # Process the webhook payloadB", 
     payload = json.loads(body)
-    print("Webhook payload: ", payload)
+    # print("Webhook payload: ", payload)
     body_data = payload.get("Body", {})
     event_type = body_data.get("event_type")
 
@@ -111,7 +110,7 @@ async def webhook(request: Request):
         transaction_ref = body_data.get("transaction_ref")
         amount_in_naira = body_data.get("amount") / 100  # Convert from Kobo to Naira
         customer_email = body_data.get("email")
-        print(f"Charge successful for transaction: {transaction_ref}")
+        # print(f"Charge successful for transaction: {transaction_ref}")
 
     # Here I can add logic to update database or trigger other actions based on the webhook data
     # Logic: 1. Check if transaction_ref exists in DB

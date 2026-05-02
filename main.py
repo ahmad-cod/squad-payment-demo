@@ -92,10 +92,22 @@ async def webhook(request: Request):
         print("Invalid signature. Computed:", computed_signature, "Received:", x_squad_encrypted_body.upper())
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid signature")
 
-    # Process the webhook payload
+    # Process the webhook payloadB", 
     payload = json.loads(body)
     print("Webhook payload: ", payload)
+    body_data = payload.get("Body", {})
+    event_type = body_data.get("event_type")
+
+    if event_type == "charge_successful":
+        transaction_ref = body_data.get("transaction_ref")
+        amount_in_naira = body_data.get("amount") / 100  # Convert from Kobo to Naira
+        customer_email = body_data.get("email")
+        print(f"Charge successful for transaction: {transaction_ref}")
 
     # Here you can add logic to update your database or trigger other actions based on the webhook data
+    # Logic: 1. Check if transaction_ref exists in DB
+    # 2. Check if status is already 'success' (Idempotency)
+    # 3. Update DB to 'success'
+    # 4. Grant access/Send confirmation email
 
     return {"status": "success", "message": "Webhook received and verified"}

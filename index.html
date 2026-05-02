@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squad Pay — Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://checkout.squadco.com/widget/squad.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-dot"></div>
+      SquadPay
+    </div>
+    <div class="badge">Sandbox</div>
+  </header>
+
+  <div class="wrapper">
+
+    <!-- ── Stats row ─────────────────────────── -->
+    <div class="card wide">
+      <div class="card-label">Session overview</div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val" id="stat-attempts">0</div>
+          <div class="stat-lbl">Payments initiated</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-verified">0</div>
+          <div class="stat-lbl">Verified successful</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-total">₦0</div>
+          <div class="stat-lbl">Amount processed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Payment form ───────────────────────── -->
+    <div class="card">
+      <div class="card-label">Step 1 — Initiate</div>
+      <h2>Checkout</h2>
+
+      <div class="field">
+        <label>Customer email</label>
+        <input type="email" id="email" placeholder="customer@example.com" />
+      </div>
+
+      <div class="field">
+        <label>Amount (Naira)</label>
+        <div class="input-group">
+          <span class="input-prefix">₦ NGN</span>
+          <input type="number" id="amount" placeholder="5000" min="100" />
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label-text">Recurring payment</div>
+          <div class="toggle-sub">Enables tokenised / subscription flow</div>
+        </div>
+        <button class="toggle" id="recurringToggle" aria-pressed="false"></button>
+      </div>
+
+      <button class="btn btn-primary" id="payBtn" onclick="initiatePayment()">
+        Launch payment modal
+      </button>
+
+      <div class="result-box" id="initResult"></div>
+    </div>
+
+    <!-- ── Verify form ────────────────────────── -->
+    <div class="card">
+      <div class="card-label">Step 2 — Verify</div>
+      <h2>Check transaction</h2>
+
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.65;">
+        After Squad redirects back, paste the <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;font-size:0.78rem;">transaction_ref</code> to confirm payment server-side.
+      </p>
+
+      <div class="field">
+        <label>Transaction reference</label>
+        <div class="ref-row">
+          <input type="text" id="txRef" placeholder="SQCx_xxxxxxxxxxxxxxxx" />
+          <button class="btn btn-secondary" onclick="verifyPayment()">Verify</button>
+        </div>
+      </div>
+
+      <div class="result-box" id="verifyResult"></div>
+
+      <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:0.5px solid var(--border);">
+        <div class="card-label" style="margin-bottom:0.8rem;">Webhook endpoint</div>
+        <div style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);word-break:break-all;">
+          POST &nbsp;<span style="color:var(--green);">http://localhost:8000/webhook</span>
+        </div>
+        <p style="margin-top:0.6rem;font-size:0.75rem;color:var(--muted);line-height:1.6;">
+          Squad signs each event with your secret key via HMAC-SHA512. Your backend verifies the <code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;">x-squad-encrypted-body</code> header automatically.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Event log ──────────────────────────── -->
+    <div class="card wide">
+      <div class="card-label" style="justify-content:space-between;display:flex;align-items:center;">
+        <span><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--green);margin-right:8px;"></span>Activity log</span>
+        <button onclick="clearLog()" style="background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:0.65rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;">Clear</button>
+      </div>
+      <div class="log-container" id="logContainer">
+        <div class="log-empty" id="logEmpty">No events yet — initiate a payment above</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Squad Payment API · Sandbox demo · FastAPI + Squad Inline Checkout</footer>
+  <script src="main.js"></script>
+</body>
+</html>

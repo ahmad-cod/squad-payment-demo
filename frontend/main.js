@@ -1,5 +1,5 @@
 console.log('%c Squad API Demo ', 'background: #fff; color: #df1255; font-size: 24px; padding: 6px 18px; border-radius: 4px;');
-const API = 'http://localhost:8000';
+const API = 'https://squadpay-backend.onrender.com';
 let isRecurring = false;
 let attempts = 0, verified = 0, totalNaira = 0;
 

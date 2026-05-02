@@ -6,11 +6,15 @@ from dotenv import load_dotenv
 import hmac
 import hashlib
 import json
-from typing import Optional
+# from typing import Optional
 
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(
+    title="Squad Pay",
+    description="Integrating API for handling payments using Squad in a FastAPI application",
+    version="1.0.0"
+)
 
 # Allow CORS for the frontend
 app.add_middleware(
@@ -26,6 +30,11 @@ BASE_URL = "https://sandbox-api-d.squadco.com"
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Squad Payment API"}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0", port=port)
 
 @app.post("/initiate-payment")
 async def initiate_payment(amount: int, email: str, is_recurring: bool = False):
@@ -104,7 +113,7 @@ async def webhook(request: Request):
         customer_email = body_data.get("email")
         print(f"Charge successful for transaction: {transaction_ref}")
 
-    # Here you can add logic to update your database or trigger other actions based on the webhook data
+    # Here I can add logic to update database or trigger other actions based on the webhook data
     # Logic: 1. Check if transaction_ref exists in DB
     # 2. Check if status is already 'success' (Idempotency)
     # 3. Update DB to 'success'
